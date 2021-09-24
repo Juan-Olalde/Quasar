@@ -140,7 +140,6 @@ _Al ser un endpoint GET se espera que regrese un objeto json similar al siguient
 
 ## Construido con 🛠️
 
-_Menciona las herramientas que utilizaste para crear tu proyecto_
 
 * [Spring boot](https://spring.io/)
 * [Maven](https://maven.apache.org/)
