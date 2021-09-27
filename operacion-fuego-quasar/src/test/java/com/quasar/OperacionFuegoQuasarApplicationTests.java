@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.quasar.exception.ServiceException;
 import com.quasar.utils.Utils;
 
 @SpringBootTest
@@ -35,7 +36,7 @@ class OperacionFuegoQuasarApplicationTests {
     }
 
     @Test
-    public void getMessageTest() {
+    public void getMessageTest() throws ServiceException {
         String[] kenobi = { "", "este", "es", "un", "mensaje" };
         String[] skywalker = { "este", "", "un", "mensaje" };
         String[] sato = { "", "", "es", "", "mensaje" };
@@ -48,7 +49,7 @@ class OperacionFuegoQuasarApplicationTests {
     }
 
 //    @Test
-    public void getMessageTest2() {
+    public void getMessageTest2() throws ServiceException {
         String[] kenobi = { "este", "", "", "mensaje", "" };
         String[] skywalker = { "", "es", "", "", "secreto" };
         String[] sato = { "este", "", "un", "", "" };

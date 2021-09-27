@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
+import com.quasar.exception.ServiceException;
 import com.quasar.model.entity.Message;
 import com.quasar.model.entity.Satellite;
 import com.quasar.request.SatelliteRequest;
@@ -63,9 +64,9 @@ public class Utils {
         double[] distances = { kenobiDistance, skywalkerDistance, satoDistance };
 
         TrilaterationFunction trilaterationFunction = new TrilaterationFunction(positions, distances);
-        NonLinearLeastSquaresSolver nSolver = new NonLinearLeastSquaresSolver(trilaterationFunction,
+        NonLinearLeastSquaresSolver nonLinearLeastSquaresSolver = new NonLinearLeastSquaresSolver(trilaterationFunction,
                 new LevenbergMarquardtOptimizer());
-        return nSolver.solve().getPoint().toArray();
+        return nonLinearLeastSquaresSolver.solve().getPoint().toArray();
     }
 
     /**
@@ -76,8 +77,10 @@ public class Utils {
      * @param skywalkerMsg Listado de mensajes del satelite skywalker
      * @param satoMsg      Listado de mensajes del satelite sato
      * @return El mensaje tal cual lo genera los emisores del mensaje
+     * @throws Exception
      */
-    public String getMessage(List<String> kenobiMsg, List<String> skywalkerMsg, List<String> satoMsg) {
+    public String getMessage(List<String> kenobiMsg, List<String> skywalkerMsg, List<String> satoMsg)
+            throws ServiceException {
         List<String> lstKenobiMsg = cleanMessage(kenobiMsg);
         List<String> lstSkywalkerMsg = cleanMessage(skywalkerMsg);
         List<String> lstSatoMsg = cleanMessage(satoMsg);
@@ -98,9 +101,8 @@ public class Utils {
         log.info("lstSkywalkerMsg:  {}", lstSkywalkerMsg);
         log.info("lstSatoMsg:       {}", lstSatoMsg);
 
-        if (!validMessage(lstKenobiMsg, lstSkywalkerMsg, lstSatoMsg)) {
-            log.error("Mensaje no valido");
-        }
+        validMessage(lstKenobiMsg, lstSkywalkerMsg, lstSatoMsg);
+
         return createMsg(lstKenobiMsg, lstSkywalkerMsg, lstSatoMsg);
     }
 
@@ -152,20 +154,19 @@ public class Utils {
      * @param skywalkerMsg Listado de mensajes de Skywalker
      * @param satoMsg      listado de mensajes de sato
      * @return true/false
+     * @throws ServiceException
      */
-    private boolean validMessage(List<String> kenobiMsg, List<String> skywalkerMsg, List<String> satoMsg) {
+    private void validMessage(List<String> kenobiMsg, List<String> skywalkerMsg, List<String> satoMsg)
+            throws ServiceException {
         log.info("Inicia metodo validMessage");
-        boolean valid = Boolean.TRUE;
         for (int i = 0; i < kenobiMsg.size(); i++) {
             if ("".equals(kenobiMsg.get(i).trim()) && "".equals(skywalkerMsg.get(i).trim())
                     && "".equals(satoMsg.get(i).trim())) {
-                log.info("Mensaje no valido: " + i);
-                valid = Boolean.FALSE;
-                break;
+                log.error("Mensaje no valido, no contiene palabra en la posicion: " + i + 1);
+                throw new ServiceException("Mensaje no valido, no contiene palabra en la posicion: " + i + 1);
             }
         }
         log.info("Termina metodo validMessage");
-        return valid;
     }
 
     /**
@@ -198,8 +199,9 @@ public class Utils {
      * @param lstSatellite Listado de satelites con su nombre, distancia y fragmento
      *                     de mensaje
      * @return Objeto con la posicion de la nave y el mensaje decodificado
+     * @throws ServiceException
      */
-    public MessageResponse topSecret(List<SatelliteRequest> lstSatellite) {
+    public MessageResponse topSecret(List<SatelliteRequest> lstSatellite) throws ServiceException {
         log.info("Entra a topSecret");
 
         double kenobiDistance = 0;
@@ -268,8 +270,12 @@ public class Utils {
      * @param lstSatellites listado de satelites
      * @return Objeto con la respuesta para el servicio rest con la posicion y
      *         mensaje decodificado
+     * @throws ServiceException
      */
-    public MessageResponse satellitesToMessageResponse(List<Satellite> lstSatellites) {
+    public MessageResponse satellitesToMessageResponse(List<Satellite> lstSatellites) throws ServiceException {
+        if(null == lstSatellites || lstSatellites.isEmpty() || 3 != lstSatellites.size()) {
+            throw new ServiceException("El listado de Satelites guardados debe de ser 3: " + lstSatellites.size());
+        }
         MessageResponse messageResponse = new MessageResponse();
         List<SatelliteRequest> lstSatelliteRequest = new ArrayList<>();
         SatelliteRequest satelliteRequest;

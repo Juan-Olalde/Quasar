@@ -2,9 +2,9 @@ package com.quasar.services;
 
 import java.util.List;
 
+import com.quasar.exception.ServiceException;
 import com.quasar.request.SatelliteRequest;
 import com.quasar.response.MessageResponse;
-
 
 /**
  * Intereface que expone los servicios con la logica de negocio del aplicativo
@@ -18,27 +18,27 @@ public interface QuasarService {
     /**
      * Permite obtener la ubicación de la nave y el mensaje decodificado
      * 
-     * @param lstSatellite Listado de satelites con su nombre, distancia y fragmento de mensaje
+     * @param lstSatellite Listado de satelites con su nombre, distancia y fragmento
+     *                     de mensaje
      * @return Objeto con la posicion de la nave y el mensaje decodificado
      * 
      */
-    MessageResponse topSecret(List<SatelliteRequest> lstSatellite);
-    
+    MessageResponse topSecret(List<SatelliteRequest> lstSatellite) throws ServiceException;
+
     /**
      * Permite guardar la informacion de un satelite en especifico
      * 
      * 
-     * @param name nombre del satelite
+     * @param name             nombre del satelite
      * @param satelliteRequest distancia y fragmento de mensaje del satelite
      */
     void save(String name, SatelliteRequest satelliteRequest);
-    
+
     /**
      * Permite obtener la ubicación de la nave y el mensaje decodificado
      * 
      * @return Objeto con la posicion de la nave y el mensaje decodificado
      */
-    MessageResponse topSecretSplit();
-    
-    
+    MessageResponse topSecretSplit() throws ServiceException;
+
 }

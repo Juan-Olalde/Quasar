@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quasar.exception.ServiceException;
 import com.quasar.model.entity.Satellite;
 import com.quasar.model.repository.QuasarDao;
 import com.quasar.request.SatelliteRequest;
@@ -34,7 +35,7 @@ public class QuasarServiceImpl implements QuasarService {
      * @see com.quasar.services.QuasarService#topSecret(List)
      */
     @Override
-    public MessageResponse topSecret(List<SatelliteRequest> lstSatellite) {
+    public MessageResponse topSecret(List<SatelliteRequest> lstSatellite) throws ServiceException {
         log.debug("Entra a metodo topSecret");
         return utils.topSecret(lstSatellite);
     }
@@ -49,17 +50,14 @@ public class QuasarServiceImpl implements QuasarService {
         quasarDao.save(utils.parseRequestToEntity(name, satelliteRequest));
     }
 
-
-
     /**
      * @see com.quasar.services.QuasarService#topSecretSplit()
      */
     @Override
-    public MessageResponse topSecretSplit() {
+    public MessageResponse topSecretSplit() throws ServiceException {
         log.debug("Entra a metodo topSecretSplit");
         List<Satellite> lstSatellites = (List<Satellite>) quasarDao.findAll();
         return utils.satellitesToMessageResponse(lstSatellites);
     }
-    
 
 }
